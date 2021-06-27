@@ -24,17 +24,40 @@ def KSA(key):
     '''
     key_length = len(key)
     # create the array "S"
+    print('------------------------------------------------------------------------------------------------------------')
+    print( ''' Key Scheduling Algorithm (key):
+        for i from 0 to 255
+            S[i] := i
+        endfor'''
+        )
+    print('------------------------------------------------------------------------------------------------------------')
     S = list(range(MOD))  # [0,1,2, ... , 255]
+    print('------------------------------------------------------------------------------------------------------------')
+    print("Generated S list:\n%s" % S)
+    print('------------------------------------------------------------------------------------------------------------')
+    print('''
+        j := 0
+        for i from 0 to 255
+            j := (j + S[i] + key[i mod keylength]) mod 256
+            swap values of S[i] and S[j]
+        endfor
+    ''')
+    print('------------------------------------------------------------------------------------------------------------')
+
     j = 0
     for i in range(MOD):
         j = (j + S[i] + key[i % key_length]) % MOD
         S[i], S[j] = S[j], S[i]  # swap values
+    print("results S list:\n%s" % S)
+    print('------------------------------------------------------------------------------------------------------------')
 
     return S
 
 
 def PRGA(S):
-    ''' Psudo Random Generation Algorithm (from wikipedia):
+    print('------------------------------------------------------------------------------------------------------------')
+    print("PRGA Start\n")
+    print(''' Psudo Random Generation Algorithm (S):
         i := 0
         j := 0
         while GeneratingOutput:
@@ -44,7 +67,8 @@ def PRGA(S):
             K := S[(S[i] + S[j]) mod 256]
             output K
         endwhile
-    '''
+    ''')
+    print('------------------------------------------------------------------------------------------------------------')
     i = 0
     j = 0
     while True:
@@ -60,6 +84,13 @@ def get_keystream(key):
     ''' Takes the encryption key to get the keystream using PRGA
         return object is a generator
     '''
+    print('------------------------------------------------------------------------------------------------------------')
+    print('Start keystream function')
+    print('------------------------------------------------------------------------------------------------------------')
+    print('''
+    S = KSA(key)
+    return = PRGA(S)
+    ''')
     S = KSA(key)
     return PRGA(S)
 
@@ -76,13 +107,29 @@ def encrypt_logic(key, text):
     keystream = get_keystream(key)
 
     res = []
+    print('------------------------------------------------------------------------------------------------------------')
+    print('To be xor:\n')
     for c in text:
-        val = ("%02X" % (c ^ next(keystream)))  # XOR and taking hex
+        keystream_holder = next(keystream)
+        print('%s ' % keystream_holder,end='')
+        val = ("%02X" % (c ^ keystream_holder))  # XOR and taking hex
         res.append(val)
-    return ''.join(res)
+    print('\nThis hex will be xor.')
+    print('------------------------------------------------------------------------------------------------------------')
+    print('------------------------------------------------------------------------------------------------------------')
+    results = ''.join(res)
+    print('The results in hex is:\n%s' % results)
+    print('------------------------------------------------------------------------------------------------------------')
+    return results
 
 
 def encrypt(key, plaintext):
+    print('Start encrypt function')
+    print('------------------------------------------------------------------------------------------------------------')
+    print('key is: %s' % key)
+    print('plaintext is: %s' % plaintext)
+    print('------------------------------------------------------------------------------------------------------------')
+    
     ''' :key -> encryption key used for encrypting, as hex string
         :plaintext -> plaintext string to encrpyt
     '''
@@ -91,6 +138,12 @@ def encrypt(key, plaintext):
 
 
 def decrypt(key, ciphertext):
+    print('------------------------------------------------------------------------------------------------------------')
+    print('Start decrypt function')
+    print('key is: %s' % key)
+    print('ciphertext is: %s' % ciphertext)
+    print('------------------------------------------------------------------------------------------------------------')
+ 
     ''' :key -> encryption key used for encrypting, as hex string
         :ciphertext -> hex encoded ciphered text using RC4
     '''
@@ -152,4 +205,3 @@ def test():
 
 if __name__ == '__main__':
     main()
-
